@@ -32,8 +32,8 @@ func run() (err error) {
 
 	for key, values := range result {
 		fmt.Printf("[%s]\n", key)
-		for _, v := range values {
-			fmt.Println(v)
+		for k, v := range values {
+			fmt.Println(k, v)
 		}
 	}
 
