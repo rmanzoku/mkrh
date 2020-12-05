@@ -30,6 +30,7 @@ func run() (err error) {
 
 	}
 
+	fmt.Println("```")
 	for key, values := range result {
 		fmt.Printf("[%s]\n", key)
 		for k, v := range values {
@@ -38,6 +39,7 @@ func run() (err error) {
 	}
 
 	fmt.Printf("at %s\n", t)
+	fmt.Println("```")
 	return
 }
 
