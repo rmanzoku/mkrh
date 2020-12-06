@@ -1,18 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
+	"time"
+)
+
+var (
+	n         = 1
+	preformat = true
 )
 
 func run() (err error) {
 	stdin, _ := ioutil.ReadAll(os.Stdin)
 	lines := strings.Split(string(stdin), "\n")
 
-	t := ""
-	result := map[string]map[string]string{}
+	var t time.Time
+	result := make(map[string]map[string]string)
 
 	for _, l := range lines {
 		if l == "" {
@@ -21,29 +29,47 @@ func run() (err error) {
 
 		fields := strings.Fields(l)
 		parts := strings.Split(fields[0], ".")
-		t = fields[2]
+		ti, _ := strconv.Atoi(fields[2])
+		t = time.Unix(int64(ti), 0)
 
-		if _, ok := result[parts[0]]; !ok {
-			result[parts[0]] = make(map[string]string)
+		subject := strings.Join(parts[0:n], ".")
+		key := strings.Join(parts[n:], ".")
+
+		if _, ok := result[subject]; !ok {
+			result[subject] = make(map[string]string)
 		}
-		result[parts[0]][strings.Join(parts[1:], ".")] = fields[1]
+		result[subject][key] = fields[1]
 
 	}
 
-	fmt.Println("```")
-	for key, values := range result {
-		fmt.Printf("[%s]\n", key)
-		for k, v := range values {
-			fmt.Println(k, v)
-		}
+	if preformat {
+		fmt.Println("```")
 	}
 
 	fmt.Printf("at %s\n", t)
-	fmt.Println("```")
+	for subject, values := range result {
+		fmt.Printf("[%s]\n", subject)
+
+		total := 0.0
+		for k, v := range values {
+			f, _ := strconv.ParseFloat(v, 84)
+			total += f
+
+			fmt.Println(k, v)
+		}
+		fmt.Println("Total: ", total)
+	}
+
+	if preformat {
+		fmt.Println("```")
+	}
 	return
 }
 
 func main() {
+	flag.BoolVar(&preformat, "p", true, "preformatted ```")
+	flag.IntVar(&n, "n", 1, "field number")
+	flag.Parse()
 	err := run()
 	if err != nil {
 		panic(err)
