@@ -51,13 +51,17 @@ func run() (err error) {
 		fmt.Printf("[%s]\n", subject)
 
 		total := 0.0
+		cnt := 0
 		for k, v := range values {
 			f, _ := strconv.ParseFloat(v, 84)
 			total += f
+			cnt++
 
 			fmt.Println(k, v)
 		}
-		fmt.Println("Total: ", total)
+		if cnt > 1 {
+			fmt.Println("Total: ", total)
+		}
 	}
 
 	if preformat {
